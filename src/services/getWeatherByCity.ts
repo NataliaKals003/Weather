@@ -10,7 +10,7 @@ interface WeatherByCityProps {
   longitude: number;
 }
 
-export interface weatherAPIResponseProps {
+export interface WeatherAPIResponseProps {
   list: {
     dt_txt: string;
     pop: number;
@@ -32,11 +32,37 @@ export interface weatherAPIResponseProps {
   }[];
 }
 
+export interface WeatherResponseProps {
+  temp: number;
+  temp_min: number;
+  temp_max: number;
+  description: string;
+  details: (typeof weatherIcons)["Clear"];
+}
+
+export interface WeatherDetailsResponseProps {
+  feels_like: number;
+  probability: number;
+  wind_speed: number;
+  humidity: number;
+  temp_kf: number;
+}
+
+interface TodayProps {
+  weather: WeatherResponseProps;
+  details: WeatherDetailsResponseProps;
+}
+
+export interface GetWeatherByCityResponseProps {
+  today: TodayProps;
+  nextDays: NextDaysItemProps[];
+}
+
 export async function getWeatherByCity({
   latitude,
   longitude,
-}: WeatherByCityProps) {
-  const { data } = await api.get<weatherAPIResponseProps>(
+}: WeatherByCityProps): Promise<GetWeatherByCityResponseProps> {
+  const { data } = await api.get<WeatherAPIResponseProps>(
     `/forecast?lat=${latitude}&lon=${longitude}`
   );
   console.log("data: ", data);
@@ -44,7 +70,7 @@ export async function getWeatherByCity({
 
   console.log(weather);
 
-  const today = {
+  const today: TodayProps = {
     weather: {
       temp: Math.ceil(main.temp),
       temp_min: Math.floor(main.temp_min),
